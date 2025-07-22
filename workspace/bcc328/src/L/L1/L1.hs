@@ -8,7 +8,7 @@ import Utils.Pretty
 import Utils.Repl
 import Utils.Value
 import V.V0.Instr
-
+import Text.Printf (printf)
 import System.Environment
 import System.FilePath
 import System.Process 
@@ -35,13 +35,46 @@ runWithOptions opts = case opts of
 -- Implement the function to do lexical analysis for L1 programs
 
 alexBasedLexer :: FilePath -> IO ()
-alexBasedLexer file = error "Not implemtented!"
+alexBasedLexer file = do
+  source <- readFile file
+  let toks = lexer source
+  mapM_ printTok toks
+  where
+    printTok (Token (l,c) lx) =
+      putStrLn $ printf "%-25s Linha:%-3d Coluna:%d" (showLex lx) l c
+
+    showLex :: Lexeme -> String
+    showLex le = case le of
+      TNumber n   -> "Número "            ++ show n
+      TIdent v    -> "Identificador "     ++ v
+      TString s   -> "String \""          ++ s ++ "\""
+      TAssign     -> "Atribuição :="
+      TSemi       -> "Ponto e vírgula ;"
+      TComma      -> "Vírgula ,"
+      TLParen     -> "Parêntese ("
+      TRParen     -> "Parêntese )"
+      TPlus       -> "Operador +"
+      TMinus      -> "Operador -"
+      TTimes      -> "Operador *"
+      TDiv        -> "Operador /"
+      TRead       -> "Palavra reservada read"
+      TPrint      -> "Palavra reservada print"
+      TEOF        -> "EOF"
+
 
 
 -- Implement the function to do syntax analysis using a recursive parser
 
 recursiveParser :: FilePath -> IO ()
-recursiveParser file = error "Not implemented!"
+recursiveParser file = do
+  src <- readFile file
+  case l1Parser src of
+    Left err -> do
+      putStrLn "Erro de parse:\n"
+      putStrLn err           -- mostra mensagem e continua
+    Right ast -> do
+      putStrLn "Árvore de sintaxe produzida:\n"
+      print ast              -- Show derivado da AST
 
 -- Implement the LALR parser 
 
