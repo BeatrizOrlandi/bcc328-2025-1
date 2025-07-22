@@ -1,4 +1,4 @@
-% Created 2025-07-14 Mon 10:41
+% Created 2025-07-12 Sat 14:26
 % Intended LaTeX compiler: pdflatex
 \documentclass[a4paper,11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -34,12 +34,12 @@
 \usepackage[latin1]{inputenc}
 \usepackage{adjustbox}
 \author{Prof. Rodrigo Ribeiro}
-\date{14-07-2025}
-\title{Exercício prático 05\\\medskip
+\date{12-07-2025}
+\title{Exercício prático 06\\\medskip
 \large BCC328 - Construção de Compiladores I}
 \hypersetup{
  pdfauthor={Prof. Rodrigo Ribeiro},
- pdftitle={Exercício prático 05},
+ pdftitle={Exercício prático 06},
  pdfkeywords={},
  pdfsubject={},
  pdfcreator={Emacs 30.1 (Org mode 9.7.11)}, 
@@ -47,13 +47,13 @@
 \begin{document}
 
 \maketitle
-\section*{Construção de um interpretador para a linguagem L2}
-\label{sec:org78fc58e}
+\section*{Finalização do compilador e interpretador para linguagem L2}
+\label{sec:org73a3677}
 
-O objetivo desta atividade é a implementação de um interpretador para  a linguagem L2,
-que adiciona escopos e variáveis imutáveis a L1.
+O objetivo desta atividade é finalizar a implementação de um interpretador e
+compilador para  a linguagem L2.
 \section*{A Linguagem L2}
-\label{sec:orgb8a3f14}
+\label{sec:orgcd9e903}
 
 A linguagem L2 consiste na extensão de L1 por permitir a definição de variáveis imutáveis
 e de seu escopo de visibilidade:
@@ -106,7 +106,7 @@ escopo de sua definição. Isso quer dizer que o comando \texttt{print(x)}
 irá imprimir o valor 1, que é o definido para a varável \texttt{x} no escopo
 deste comando.
 \subsection*{Sintaxe da linguagem L2}
-\label{sec:org849bbdd}
+\label{sec:orgcce6b9d}
 
 A sintaxe da linguagem L1 é definida pela seguinte gramática livre de contexto:
 
@@ -167,7 +167,7 @@ data E2
 O tipo \texttt{L2} representa a variável P, \texttt{S2} denota a variável S e \texttt{E2} representa a
 variável E  da gramática de L2.
 \subsection*{Semântica de L2}
-\label{sec:org6ade614}
+\label{sec:org2fab51c}
 
 A semântica de L2 é exatamente a de L1 com novas regras para lidar com variáveis imutáveis.
 Para isso, vamos introduzir um novo ambiente para armazenar os valores deste tipo de variável.
@@ -187,57 +187,65 @@ A regra para lidar com definições de variáveis imutáveis é como se segue:
   \dfrac{\varphi ; \sigma ; e \Downarrow n\,\,\,\,\,\varphi' = \varphi[v \mapsto n]\,\,\,\,\varphi';\sigma ; B \Downarrow \sigma'}
         {\varphi ; \sigma ; def\,v:=e\,in\,B \Downarrow \varphi ; \sigma'}
 \end{array}
+\subsection*{Análise semântica de L2}
+\label{sec:orgda69ad0}
+
+A etapa de análise semântica de L2 é bem simples: Basta verificar cada atribuição e garantir
+que toda variável do lado esquerdo não seja uma variável imutável. Sua implementação deverá
+utilizar um contexto, que consiste de uma lista de variáveis imutáveis visíveis em um determinado
+ponto do programa. A cada nova definição de variável imutável, você deverá incluí-la no contexto e
+assim que o escopo de sua definição terminar, esta deve ser removida deste contexto.
+
+A inserção de variáveis imutáveis no contexto deve ser feita utilizando a função \texttt{insertVar} e
+a remoção por \texttt{removeVar}. Ambas as funções já estão implementadas no
+módulo \texttt{L.L2.Frontend.TypeCheck}.
 \section*{Detalhes da entrega}
-\label{sec:orgbc099e7}
+\label{sec:org546aa3f}
 
 \subsection*{O que deverá ser implementado}
-\label{sec:orgfbacecc}
+\label{sec:orgf1b1de3}
 
 Você deverá implementar:
 
 \begin{itemize}
-\item Analisador léxico para L2.
+\item Verificação semântica para L2.
 
-\item Analisador sintático para L2.
+\item Geração de código para a máquina virtual V1.
 
-\item Interpretador para L2.
+\item Geração de código C a partir do código L2 e uso do GCC para geração do executável.
 \end{itemize}
 
 A seguir, detalharemos a estrutura pré-definida do projeto para L2.
-A primeira função \texttt{lexerOnly} deve realizar a análise léxica sobre o
-arquivo de entrada e imprimir os tokens encontrados, como feito para a
-implementação de L1, em exercícios anteriores.
-
-\begin{verbatim}
-lexerOnly :: FilePath -> IO ()
-lexerOnly file = error "Not implemented!"
-\end{verbatim}
-
-A segunda função, \texttt{parserOnly}, deve realizar a análise sintática sobre o
-arquivo de entrada e imprimir a árvores de sintaxe produzida, como feito para a
-implementação de L1.
-
-\begin{verbatim}
-parserOnly :: FilePath -> IO ()
-parserOnly file = error "Not implemented!"
-\end{verbatim}
-
-Finalmente, a última função, \texttt{interpret}, deve realizar a interpretação do programa
-contido no arquivo fonte fornecido. Para isso, você deverá executar a análise léxica,
-sintática e executar o programa representado pela árvore produzida pelo analisador
-sintático de L2.
-
+Primeiramente, você deverá modificar a implementação da função
 \begin{verbatim}
 interpret :: FilePath -> IO ()
 interpret file = error "Not implemented!"
 \end{verbatim}
+para que esta realize as análises léxica, sintática e semântica antes da
+execução do código fornecido no arquivo de entrada.
 
-todas essa funções estão presentes no arquivo src/L2/L2.hs, que é o arquivo principal
-para implementações da linguagem L2.
-A implementação da árvore sintática para programas L2 está presente no arquivo \texttt{Syntax.hs}
-na pasta L2.Frontend.
+A geração de código para a máquina virtual V1 deve ser implementada no módulo
+\texttt{L.L2.Backend.V1Codegen}. No arquivo \texttt{L2.hs}, você deverá implementar a função:
+
+\begin{verbatim}
+v1Compiler :: FilePath -> IO ()
+v1Compiler file = error "Not implemented!"
+\end{verbatim}
+
+que realizará toda a etapa de análise do código e então gerará um arquivo contendo
+as instruções V1 correspondentes ao programa L2 fornecido como entrada. O texto
+gerado por seu compilador deve utilizar a função \texttt{pretty} definida no módulo
+\texttt{Utils.Pretty} para produzir código sintaticamente correto.
+
+Geração de código executável é feita usando código fonte C que deve ser compilado
+usando o compilador GCC.
+
+\begin{verbatim}
+cCompiler :: FilePath -> IO ()
+cCompiler file = error "Not implemented!"
+\end{verbatim}
 \subsection*{Como será feita a entrega}
-\label{sec:org8b96cac}
+\label{sec:org4b84471}
 
 \begin{itemize}
 \item As entregas serão feitas utilizando a plataforma Github classroom.

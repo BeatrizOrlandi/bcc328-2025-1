@@ -1,4 +1,4 @@
-module V.V1.Interp where
+module V.V2.Interp where
 
 import Control.Monad
 import Control.Monad.Except
@@ -9,7 +9,7 @@ import Data.Char
 import Data.Map(Map)
 import qualified Data.Map as Map
 
-import V.V1.Instr
+import V.V2.Instr
 import Utils.Pretty
 import Utils.Value
 import Utils.Var
@@ -29,6 +29,15 @@ execInstr Add = binop (.+.)
 execInstr Mul = binop (.*.)
 execInstr Sub = binop (.-.)
 execInstr Div = binop (./.)
+execInstr Lt = binop (.<.)
+execInstr IEq = binop (.=.)
+execInstr And = binop vand
+execInstr Not
+  = do
+      v <- pop
+      case vnot v of
+        Left err -> throwError err
+        Right v' -> push v'
 execInstr Input = input
 execInstr Print = printValue
 execInstr (Load v) = load v
