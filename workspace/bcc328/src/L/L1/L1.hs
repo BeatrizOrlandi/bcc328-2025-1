@@ -12,6 +12,7 @@ import Text.Printf (printf)
 import System.Environment
 import System.FilePath
 import System.Process
+import Happy.L1Parser (parseL1)
 
 main :: IO ()
 main = do
@@ -81,7 +82,11 @@ recursiveParser file = do
 -- Implement the LALR parser
 
 lalrParser :: FilePath -> IO ()
-lalrParser file = error "Not implemented!"
+lalrParser file = do
+  src <- readFile file
+  case parseL1 src of
+    Left err   -> putStrLn $ "Erro LALR:\n" ++ err
+    Right ast  -> print ast
 
 -- Implement the V1 code generator
 
