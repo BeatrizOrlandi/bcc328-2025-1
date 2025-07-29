@@ -46,10 +46,11 @@ v1Compiler file = do
   case parseL2 src >>= typeCheck of
     Left err  -> putStrLn err
     Right ast -> do
-      let instrs = v1Codegen ast
+      let instrs = v1Codegen ast           
+          v1Src  = unlines instrs         
           out    = replaceExtension file ".v1"
-      writeFile out (unlines (map pretty instrs))
-      putStrLn $ "Código V1 salvo em " ++ out 
+      writeFile out v1Src
+      putStrLn $ "V1 code written to " ++ out
 
 -- 4. Compilador C  ---------------------------------------------------------
 cCompiler :: FilePath -> IO ()
